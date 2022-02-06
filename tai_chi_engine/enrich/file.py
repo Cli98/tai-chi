@@ -32,6 +32,32 @@ class EnrichImage(Enrich):
         img = img.resize((self.size, self.size))
         return img
 
+class EnrichImageWithAuto(Enrich):
+    """
+    Create Image column from image path column
+    """
+    prefer = "QuantifyImage"
+    typing = Image
+    lazy = True
+    stateful_dict = dict(
+        convert="str",
+        size="list",
+    )
+    def __init__(
+        self, convert: STR("RGB") = "RGB",
+        size: LIST(options=[28, 128, 224, 256, 512], default=224) = 224,
+    ):
+        self.convert = convert
+        self.size = size
+
+    def __repr__(self):
+        return f"[Image:{self.size}]"
+
+    def __call__(self, x):
+        img = Image.open(x).convert(self.convert)
+        img = img.resize((self.size, self.size))
+        return img
+
 
 class ParentAsLabel(Enrich):
     typing = str
